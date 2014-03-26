@@ -13,10 +13,10 @@ It's a fun and easy way to stay on top of DOGE and BTC price movements!
 ##What to expect:
 I plan to expand @dogepricebot's functionality to be more interactive. Soon,
 people will be able to use @dogepricebot like a currency conversion calculator,
-using the following syntax:
+using the following syntax:  
     `@dogepricebot convert XXXX DOGE to USD`
 
-Should yield the following output:
+Should yield the following output:  
     `@twitter_user XXXX #DOGE = $Y.YY USD`
 
 That's the plan for now. I also plan to expand to EURO support.
