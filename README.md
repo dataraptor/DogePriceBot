@@ -17,7 +17,7 @@ using the following syntax:
     `@dogepricebot convert XXXX DOGE to USD`
 
 Should yield the following output:  
-    `@twitter_user XXXX #DOGE = $Y.YY USD`
+    `@twitter_user such convert: XXXX #DOGE = $Y.YY USD #dogepricebot`
 
 That's the plan for now. I also plan to expand to EURO support.
 
