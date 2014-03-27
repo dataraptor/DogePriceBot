@@ -31,7 +31,10 @@ That's the plan for now. I also plan to expand to EURO support.
 3. ~~Connect Twitter bot with streaming program~~ **DONE**
 4. ~~Publicize tweets~~ **DONE**
 5. ~~Create twitter profile logo~~ **DONE**
-6. Set up database for historical prices
-7. Pull from database for daily, weekly, and monthly visualizations using matplotlib
-8. Post price chart with appropriate doge syntax "such uptick" "very slump" etc.
+6. ~~Set up database for historical prices~~ **DONE**
+7. Migrate .db file onto Raspberry Pi cluster to begin building price database
+9. Automate .db commit daily into github
+11. Set up, test, and launch `@dogepricebot convert` interactive capabilities
+12. Pull from database for daily, weekly, and monthly visualizations using matplotlib
+13. Post price chart with appropriate doge syntax "such uptick" "very slump" etc.
 
