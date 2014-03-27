@@ -6,6 +6,7 @@ import json, urllib2
 import sqlite3
 #Build database of dogecoin prices with sqlite3
 from dogepricestreamer import DogePriceStreamer
+from dogepricebase import DogePriceBase
 
 class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
@@ -30,6 +31,7 @@ class DogePriceBot:
 
 	#Instatiation of the Dogestreamer object
 	streamer = DogePriceStreamer()
+	pricedb = DogePriceBase()
 
 	currenttime = 0
 	lasttime = 0
@@ -84,16 +86,16 @@ class DogePriceBot:
 			   
 	def hourly_update(self):
 		self.update_prices()
-
+		#Comment out when testing
 		'''self.api.update_status('['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
 			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
 			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
 			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
 			'#dogecoin #BTC #dogepricebot')
 		'''
-		
+
 		print ''
-		print 'Tweet posted:'
+		#print 'Tweet posted:'
 		print '['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
 			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
 			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
@@ -101,7 +103,10 @@ class DogePriceBot:
 			'#dogecoin #BTC #dogepricebot'
 			  #'D'+self.dogeusd+'  DOGE:$', self.percent_change(self.dogeusd, self.last_hour_dogeusd)+'\n'+\
 		print ''
-		lasttime = self.currenttime
+		print 'Updating price database...'
+		self.pricedb.update_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
+		print '...done'
+		print ''
 		#Update last_hour variables
 		
 		print 'Last DOGE:BTC', self.last_hour_dogebtc
@@ -117,6 +122,7 @@ class DogePriceBot:
 		print 'Last USD:BTC', self.last_hour_usdbtc
 		self.last_hour_usdbtc = self.usdbtc
 		print 'New USD:BTC', self.usdbtc
+		print ''
 			  
 	def daily_update(self):
 		print 'Today\'s #DOGE performance:'+'\n'+\
@@ -143,45 +149,8 @@ class DogePriceBot:
 			except Exception, e:
 				print e
 			#Sleep for an hour
-			print 'Sleeping for 30 minutes...'
-			time.sleep(1800)
-		'''
-		while True:
-			try:
-				currenttime = datetime.now().replace(microsecond=0)
-				if currenttime.minute == 0:
-					print 'New hour, posting tweet'
-					print ''
-					hourly_update()
-					print ''
-					print 'Tweet posted'
-			except Exception, e:
-				print str(e)
-			print 'Sleeping for 60 seconds...'
-			time.sleep(60)
-		'''
-		'''
-		print 'Avg #dogecoin price at '+str(time.time())+':'+'\n'+\
-						  dogebtc+' #DOGE:#BTC'+'\n'+\
-						  '$'+dogeusd+'  USD:DOGE'+'\n'+\
-						  'D'+usddoge+'   DOGE:USD '+'\n'+\
-						  '$'+btcusd+'    USD:BTC '+'\n'+\
-						  '#dogepricebot'
-		print ''
-		print 'Daily #DOGE update for '+str(time.date())+':''\n'+\
-						  dogebtc+' #DOGE:#BTC'+'\n'+\
-						  '$'+dogeusd+'  USD:DOGE'+'\n'+\
-						  'D'+usddoge+'   DOGE:USD '+'\n'+\
-						  '$'+btcusd+'    USD:BTC '+'\n'+\
-						  '#dogepricebot'
-		print ''
-		while True:
-			try:
-				pricelist = getprices()
-				api.update_status()
-			except Exception, e:
-				print str(e)
-		'''
+			print 'Sleeping for 60 minutes...'
+			time.sleep(3600)
 
 bot = DogePriceBot()
 print bot
