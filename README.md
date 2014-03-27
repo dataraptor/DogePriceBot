@@ -30,7 +30,7 @@ That's the plan for now. I also plan to expand to EURO support.
 2. ~~Create Twitter bot~~ **DONE**
 3. ~~Connect Twitter bot with streaming program~~ **DONE**
 4. ~~Publicize tweets~~ **DONE**
-5. Create twitter profile logo
+5. ~~Create twitter profile logo~~ **DONE**
 6. Set up database for historical prices
 7. Pull from database for daily, weekly, and monthly visualizations using matplotlib
 8. Post price chart with appropriate doge syntax "such uptick" "very slump" etc.
