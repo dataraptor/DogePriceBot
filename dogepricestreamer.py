@@ -14,7 +14,7 @@ opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 opener.addheaders = [('User-agent','Mozilla/5.0')]
 
 
-class Dogestreamer:
+class DogePriceStreamer:
 	#Global variables
 	cryptsy = 0
 	bter = 0

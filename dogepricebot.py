@@ -5,9 +5,9 @@ from datetime import datetime
 import json, urllib2
 import sqlite3
 #Build database of dogecoin prices with sqlite3
-from dogestreamer import Dogestreamer
+from dogepricestreamer import DogePriceStreamer
 
-class DogeTweetbot:
+class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
 	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
 	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
@@ -29,7 +29,7 @@ class DogeTweetbot:
 	#print('Friends: ', user.friends_count)
 
 	#Instatiation of the Dogestreamer object
-	streamer = Dogestreamer()
+	streamer = DogePriceStreamer()
 
 	currenttime = 0
 	lasttime = 0
@@ -85,11 +85,13 @@ class DogeTweetbot:
 	def hourly_update(self):
 		self.update_prices()
 
-		self.api.update_status('['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
+		'''self.api.update_status('['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
 			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
 			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
 			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
 			'#dogecoin #BTC #dogepricebot')
+		'''
+		
 		print ''
 		print 'Tweet posted:'
 		print '['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
@@ -181,7 +183,7 @@ class DogeTweetbot:
 				print str(e)
 		'''
 
-bot = DogeTweetbot()
+bot = DogePriceBot()
 print bot
 print ''
 bot.stream()
