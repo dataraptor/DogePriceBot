@@ -10,10 +10,10 @@ from dogepricebase import DogePriceBase
 
 class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
-	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
-	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
-	access_token = '2409405422-JOZnjcCh4ZiMngnT6x0tEAKRSf9iq8s6nPZoDyr'
-	access_token_secret = 'o3xl4L4WTIFZGlAjUmlylClAVNNJf49OyvCuhdtnsvt83'
+	#consumer_key = ''
+	#consumer_secret = ''
+	#access_token = ''
+	#access_token_secret = ''
 	# OAuth process, using the keys and tokens
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 	auth.set_access_token(access_token, access_token_secret)
@@ -85,7 +85,6 @@ class DogePriceBot:
 			   #'D'+str(self.dogeusd)+'    DOGE:USD'+'\n'+\
 			   
 	def hourly_update(self):
-		self.update_prices()
 		#Comment out when testing
 		'''self.api.update_status('['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
 			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
@@ -143,14 +142,21 @@ class DogePriceBot:
 	def stream(self):
 		while True:
 			try:
-				self.hourly_update()
+				self.update_prices()
+				print 'Current time:', self.currenttime
+				print 'Last updated:', self.lasttime
+				if (self.currenttime - self.lasttime).seconds/3600 >= 1:
+					print 'Hour has passed, updating now'
+					self.hourly_update()
+				else:
+					print 'Minute has not yet passed'
 			#if new hour, hourly_update()
 			#if 5pm, daily_update()
 			except Exception, e:
 				print e
 			#Sleep for an hour
-			print 'Sleeping for 60 minutes...'
-			time.sleep(3600)
+			print 'Sleeping for 60 seconds...'
+			time.sleep(60)
 
 bot = DogePriceBot()
 print bot
