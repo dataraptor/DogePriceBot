@@ -3,14 +3,15 @@
 
 It's a fun and easy way to stay on top of DOGE and BTC price movements!
 
-##Exchanges supported:
+###Exchanges supported:
 + BTC-e
 + BTER
 + CoinedUp
 + Cryptsy
 + More on the way!
+---
 
-##What to expect:
+###What to expect:
 I plan to expand @dogepricebot's functionality to be more interactive. Soon,
 people will be able to use @dogepricebot like a currency conversion calculator,
 using the following syntax:
@@ -23,7 +24,7 @@ Should yield the following output:
 
 That's the plan for now. I also plan to expand to EURO support.
 
-##Milestones:
+###Milestones:
 1. ~~Write streaming program~~ **DONE**
 2. ~~Create Twitter bot~~ **DONE**
 3. ~~Connect Twitter bot with streaming program~~ **DONE**
