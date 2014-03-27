@@ -1,20 +1,25 @@
 import sqlite3
-from dogepricestreamer import DogePriceStreamer
-from dogepricebot import dogepricebot
 
-conn = sqlite3.connect('dogePriceBase.db')
-c = conn.cursor()
+class DogePriceBase:
+	conn = 0
+	c = 0
+	def __init__(self):
+		self.conn = sqlite3.connect('dogePriceBase.db')
+		self.c = self.conn.cursor()
 
-#Only execute this once to create the database
-def createDB():
-	c.execute("CREATE TABLE dogePrices (year INTEGER, month INTEGER, day INTEGER, hour INTEGER, dogebtc REAL, usddoge REAL, usdbtc REAL")
+	def __str__(self):
+		return 'I am the dogePrice database interactive python program.'
 
-#createDB()
+	#Only execute this once to create the database
+	def create_DB(self):
+		self.c.execute("CREATE TABLE dogePrices (year INTEGER, month INTEGER, day INTEGER, hour INTEGER, dogebtc REAL, usddoge REAL, usdbtc REAL)")
 
-def updateDB(timestamp, dogebtc, usddoge, usdbtc):
-	#timestamp is in datetime.now() format
-	year = timestamp.year
-	month = timestamp.month
-	day = timestamp.day
-	hour = timestamp.hour
-	c.execute("INSERT INTO dogePrices")
+	def update_DB(self, timestamp, dogebtc, usddoge, usdbtc):
+		#timestamp is in datetime.now() format
+		year = timestamp.year
+		month = timestamp.month
+		day = timestamp.day
+		hour = timestamp.hour
+		self.c.execute("INSERT INTO dogePrices (year, month, day, hour, dogebtc, usddoge, usdbtc) VALUES (?,?,?,?,?,?,?)",
+				   (year, month, day, hour, dogebtc, usddoge, usdbtc))
+		self.conn.commit()
