@@ -9,6 +9,7 @@ It's a fun and easy way to stay on top of DOGE and BTC price movements!
 + CoinedUp
 + Cryptsy
 + More on the way!
+
 ---
 
 ###What to expect:
