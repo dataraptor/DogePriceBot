@@ -3,6 +3,7 @@ import sqlite3
 class DogePriceBase:
 	conn = 0
 	c = 0
+	
 	def __init__(self):
 		self.conn = sqlite3.connect('dogePriceBase.db')
 		self.c = self.conn.cursor()
