@@ -32,9 +32,9 @@ That's the plan for now. I also plan to expand to EURO support.
 4. ~~Publicize tweets~~ **DONE**
 5. ~~Create twitter profile logo~~ **DONE**
 6. ~~Set up database for historical prices~~ **DONE**
-7. Migrate .db file onto Raspberry Pi cluster to begin building price database
-9. Automate .db commit daily into github
-11. Set up, test, and launch `@dogepricebot convert` interactive capabilities
-12. Pull from database for daily, weekly, and monthly visualizations using matplotlib
-13. Post price chart with appropriate doge syntax "such uptick" "very slump" etc.
+7. ~~Migrate .db file onto Raspberry Pi cluster to begin building price database~~ **DONE**
+8. Automate .db commit daily into github
+9. Set up, test, and launch `@dogepricebot convert` interactive capabilities
+10. Pull from database for daily, weekly, and monthly visualizations using matplotlib
+11. Post price chart with appropriate doge syntax "such uptick" "very slump" etc.
 
