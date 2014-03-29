@@ -1,7 +1,6 @@
 #dogetweetbot.py
 import tweepy
 import time, datetime
-from datetime import datetime
 import json, urllib2
 import sqlite3
 #Build database of dogecoin prices with sqlite3
@@ -41,10 +40,11 @@ class DogePriceBot:
 	last_week_dogebtc = last_week_usdbtc = last_week_dogeusd = last_week_usddoge = 0
 
 	def __init__(self):
-		self.currenttime = datetime.now().replace(microsecond=0)
-		self.last_hour_dogebtc = 0.00000106
-		self.last_hour_usddoge = 0.000604
-		self.last_hour_usdbtc = 568.01
+		self.currenttime = datetime.datetime.now().replace(microsecond=0)
+		self.lasttime = self.currenttime - datetime.timedelta(seconds=3600)
+		self.last_hour_dogebtc = 0.00000116
+		self.last_hour_usddoge = 0.000582
+		self.last_hour_usdbtc = 500.00
 		self.update_prices()
 
 	def percent_change(self, new, old):
@@ -63,8 +63,7 @@ class DogePriceBot:
 
 	def update_prices(self):
 		#Getting updated doge prices
-		self.lasttime = self.currenttime
-		self.currenttime = datetime.now().replace(microsecond=0)
+		self.currenttime = datetime.datetime.now().replace(microsecond=0)
 		self.streamer.update_prices()
 		self.dogebtc = self.streamer.avg_dogebtc
 		self.usdbtc = self.streamer.usdbtc
@@ -144,18 +143,20 @@ class DogePriceBot:
 			try:
 				self.update_prices()
 				print 'Current time:', self.currenttime
-				print 'Last updated:', self.lasttime
+				print 'Last tweeted:', self.lasttime
 				if (self.currenttime - self.lasttime).seconds/3600 >= 1:
 					print 'Hour has passed, updating now'
 					self.hourly_update()
+					self.lasttime = self.currenttime
 				else:
-					print 'Minute has not yet passed'
+					print self.currenttime, 'Hour has not yet passed'
 			#if new hour, hourly_update()
 			#if 5pm, daily_update()
 			except Exception, e:
 				print e
 			#Sleep for an hour
 			print 'Sleeping for 60 seconds...'
+			print ''
 			time.sleep(60)
 
 bot = DogePriceBot()
