@@ -2,8 +2,6 @@
 import tweepy
 import time, datetime
 import json, urllib2
-import sqlite3
-#Build database of dogecoin prices with sqlite3
 from dogepricestreamer import DogePriceStreamer
 from dogepricebase import DogePriceBase
 
@@ -153,7 +151,7 @@ class DogePriceBot:
 			#if new hour, hourly_update()
 			#if 5pm, daily_update()
 			except Exception, e:
-				print e
+				print str(e)
 			#Sleep for an hour
 			print 'Sleeping for 60 seconds...'
 			print ''
