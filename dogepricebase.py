@@ -13,7 +13,7 @@ class DogePriceBase:
 
 	#Only execute this once to create the database
 	def create_DB(self):
-		self.c.execute("CREATE TABLE dogePrices (year INTEGER, month INTEGER, day INTEGER, hour INTEGER, dogebtc REAL, usddoge REAL, usdbtc REAL)")
+		self.c.execute("CREATE TABLE dogePrices (year INTEGER, month INTEGER, day INTEGER, hour INTEGER, minute INTEGER, dogebtc REAL, usddoge REAL, usdbtc REAL)")
 
 	def update_DB(self, timestamp, dogebtc, usddoge, usdbtc):
 		#timestamp is in datetime.now() format
@@ -21,6 +21,7 @@ class DogePriceBase:
 		month = timestamp.month
 		day = timestamp.day
 		hour = timestamp.hour
-		self.c.execute("INSERT INTO dogePrices (year, month, day, hour, dogebtc, usddoge, usdbtc) VALUES (?,?,?,?,?,?,?)",
-				   (year, month, day, hour, dogebtc, usddoge, usdbtc))
+		minute = timestamp.minute
+		self.c.execute("INSERT INTO dogePrices (year, month, day, hour, minute, dogebtc, usddoge, usdbtc) VALUES (?,?,?,?,?,?,?,?)",
+				   (year, month, day, hour, minute, dogebtc, usddoge, usdbtc))
 		self.conn.commit()
