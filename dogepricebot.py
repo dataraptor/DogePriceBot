@@ -39,10 +39,12 @@ class DogePriceBot:
 
 	def __init__(self):
 		self.currenttime = datetime.datetime.now().replace(microsecond=0)
-		self.lasttime = self.currenttime - datetime.timedelta(seconds=3600)
-		self.last_hour_dogebtc = 0.00000116
-		self.last_hour_usddoge = 0.000582
-		self.last_hour_usdbtc = 500.00
+		#Need to update database for minute column
+		last_tweet = self.pricedb.c.execute("SELECT * FROM dogePrices ORDER BY day DESC, hour DESC").fetchone()
+		self.lasttime = datetime.datetime(last_tweet[0], last_tweet[1], last_tweet[2], last_tweet[3], last_tweet[4], second=0, microsecond=0)
+		self.last_hour_dogebtc = last_tweet[5]
+		self.last_hour_usddoge = last_tweet[6]
+		self.last_hour_usdbtc = last_tweet[7]
 		self.update_prices()
 
 	def percent_change(self, new, old):
@@ -121,21 +123,14 @@ class DogePriceBot:
 		print ''
 			  
 	def daily_update(self):
+		
 		print 'Today\'s #DOGE performance:'+'\n'+\
 			  dogebtc+'  DOGE:BTC', percent_change(dogebtc, last_day_dogebtc)+'\n'+\
 			  '$'+dogeusd+'  USD:DOGE', percent_change(usdbtc, last_day_usdbtc)+'\n'+\
 			  'D'+usddoge+'   DOGE:USD', percent_change(dogeusd, last_day_dogeusd)+'\n'+\
 			  '$'+btcusd+'    USD:BTC', percent_change(usddoge, last_day_usddoge)+'\n'+\
 			  '#dogepricebot'
-	
-	def weekly_update(self):
-		print 'This week\'s #DOGE performance:'+'\n'+\
-			  dogebtc+'  DOGE:BTC', percent_change(dogebtc, last_day_dogebtc)+'\n'+\
-			  '$'+dogeusd+'  USD:DOGE', percent_change(usdbtc, last_day_usdbtc)+'\n'+\
-			  'D'+usddoge+'   DOGE:USD', percent_change(dogeusd, last_day_dogeusd)+'\n'+\
-			  '$'+btcusd+'    USD:BTC', percent_change(usddoge, last_day_usddoge)+'\n'+\
-			  '#dogepricebot'	
-	
+
 	def stream(self):
 		while True:
 			try:
@@ -157,7 +152,8 @@ class DogePriceBot:
 			print ''
 			time.sleep(60)
 
-bot = DogePriceBot()
-print bot
-print ''
-bot.stream()
+if __name__ == "__main__":
+	bot = DogePriceBot()
+	print bot
+	print ''
+	print bot.stream()
