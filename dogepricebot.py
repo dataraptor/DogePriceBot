@@ -1,12 +1,16 @@
 #dogetweetbot.py
 import tweepy
-import time, datetime
+import time, datetime, calendar
 import json, urllib2
 from dogepricestreamer import DogePriceStreamer
 from dogepricebase import DogePriceBase
 
 class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
+	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
+	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
+	access_token = '2409405422-JOZnjcCh4ZiMngnT6x0tEAKRSf9iq8s6nPZoDyr'
+	access_token_secret = 'o3xl4L4WTIFZGlAjUmlylClAVNNJf49OyvCuhdtnsvt83'
 	#consumer_key = ''
 	#consumer_secret = ''
 	#access_token = ''
@@ -84,63 +88,62 @@ class DogePriceBot:
 			   #'D'+str(self.dogeusd)+'    DOGE:USD'+'\n'+\
 			   
 	def hourly_update(self):
-		#Comment out when testing
-		'''self.api.update_status('['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
-			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
-			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
-			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
-			'#dogecoin #BTC #dogepricebot')
-		'''
-
-		print ''
-		#print 'Tweet posted:'
-		print '['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
+		status = '['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
 			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
 			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
 			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
 			'#dogecoin #BTC #dogepricebot'
+		print ''
+		#Comment out when testing
+		#self.api.update_status(status)
+		#print 'Tweet posted:'
+		print status
 			  #'D'+self.dogeusd+'  DOGE:$', self.percent_change(self.dogeusd, self.last_hour_dogeusd)+'\n'+\
 		print ''
 		print 'Updating price database...'
 		self.pricedb.update_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
 		print '...done'
 		print ''
-		#Update last_hour variables
-		
-		print 'Last DOGE:BTC', self.last_hour_dogebtc
-		self.last_hour_dogebtc = self.dogebtc
-		print 'New DOGE:BTC', self.dogebtc
-		
-		#self.last_hour_dogeusd = self.dogeusd
-
-		print 'Last USD:DOGE', self.last_hour_usddoge
-		self.last_hour_usddoge = self.usddoge
-		print 'New USD:DOGE', self.usddoge
-
-		print 'Last USD:BTC', self.last_hour_usdbtc
-		self.last_hour_usdbtc = self.usdbtc
-		print 'New USD:BTC', self.usdbtc
-		print ''
 			  
 	def daily_update(self):
 		#Need to update for beginning and end of months
 		#Assumption is that this would happen at 5pm everyday
-		last_day = (self.currenttime.day - 1)
+		#Determining the last_day, even if it's the end of the month
+		months_with_31_days = [1, 3, 5, 7, 8, 10, 12]
+		if self.currenttime.day == 1:
+			last_month = self.currenttime.month-1
+			#Assigns last_day to 31 if last month was within the list of months
+			#   with 31 days
+			if last_month in months_with_31_days:
+				last_day = 31
+			#Assigns last_day to 29 if last month was feburary in a leap year, otherwise
+			#   is 28
+			elif last_month  == 2:
+				if calendar.isleap(self.currenttime.year):
+					last_day = 29
+				else:
+					last_day = 28
+			else:
+				last_day = 30
+
 		last_day_tweet = self.pricedb.c.execute("SELECT * FROM dogePrices WHERE (day = ? AND hour = ?)", (last_day, 19)).fetchone()
 		self.last_day_dogebtc = last_day_tweet[5]
 		self.last_day_usddoge = last_day_tweet[6]
 		self.last_day_usdbtc = last_day_tweet[7]
-		print 'Today\'s #DOGE performance:'+'\n'+\
-			  self.dogebtc+'  DOGE:BTC', self.percent_change(self.dogebtc, self.last_day_dogebtc)+'\n'+\
-			  '$'+self.usddoge+'  USD:DOGE', self.percent_change(self.usddoge, self.last_day_usddoge)+'\n'+\
-			  '$'+self.usdbtc+'    USD:BTC', self.percent_change(self.usdbtc, self.last_day_usdbtc)+'\n'+\
-			  '#dogecoin #BTC #dogepricebot'
+
+		status = 'Today\'s #DOGE performance:'+'\n'+\
+			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
+			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
+			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
+			'#dogecoin #BTC #dogepricebot'
+
+		print status
 
 	def weekly_update(self):
 		#Need to update for beginning and end of months
 		#Assumption is that this would happen at 5pm everyday
 		last_week = (self.currenttime.day - 7)
-		last_week_tweet = self.pricedb.c.execute("SELECT * FROM dogePrices WHERE (day = ? AND hour = ?)", (last_week, 19)).fetchone()
+		last_week_tweet = self.pricedb.c.execute("SELECT * FROM dogePrices WHERE (day = ? AND hour = ?)", (last_week, 11)).fetchone()
 		try:
 			self.last_week_dogebtc = last_week_tweet[5]
 			self.last_week_usddoge = last_week_tweet[6]
@@ -178,4 +181,4 @@ if __name__ == "__main__":
 	bot = DogePriceBot()
 	print bot
 	print ''
-	print bot.stream()
+	bot.daily_update()
