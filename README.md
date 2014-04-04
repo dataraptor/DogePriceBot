@@ -35,6 +35,6 @@ That's the plan for now. I also plan to expand to EURO support.
 7. ~~Migrate .db file onto Raspberry Pi cluster to begin building price database~~ **DONE**
 8. Automate .db commit daily into github
 9. Set up, test, and launch `@dogepricebot convert` interactive capabilities
-10. Pull from database for daily, weekly, and monthly visualizations using matplotlib
-11. Post price chart with appropriate doge syntax "such uptick" "very slump" etc.
+10. Pull from database for daily, weekly, and monthly visualizations using plot.ly
+11. Post price chart with appropriate doge syntax "such uptick" "very slump" etc. 
 
