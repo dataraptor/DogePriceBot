@@ -2,6 +2,7 @@
 import tweepy
 import time, datetime, calendar
 import json, urllib2
+import string
 from dogepricestreamer import DogePriceStreamer
 from dogepricebase import DogePriceBase
 
@@ -33,6 +34,7 @@ class DogePriceBot:
 	#Instatiation of the Dogestreamer object
 	streamer = DogePriceStreamer()
 	pricedb = DogePriceBase()
+	replied_tweetids = []
 
 	currenttime = 0
 	lasttime = 0
@@ -89,7 +91,7 @@ class DogePriceBot:
 			   
 	def hourly_update(self):
 		status = '['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
-			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
+			self.dogebtc+'  BTC:DOGE '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
 			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
 			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
 			'#dogecoin #BTC #dogepricebot'
@@ -132,7 +134,7 @@ class DogePriceBot:
 		self.last_day_usdbtc = last_day_tweet[7]
 
 		status = 'Today\'s #DOGE performance:'+'\n'+\
-			self.dogebtc+'  DOGE:BTC '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
+			self.dogebtc+'  BTC:DOGE '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
 			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
 			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
 			'#dogecoin #BTC #dogepricebot'
@@ -149,12 +151,48 @@ class DogePriceBot:
 			self.last_week_usddoge = last_week_tweet[6]
 			self.last_week_usdbtc = last_week_tweet[7]
 			print 'This week\'s #DOGE performance:'+'\n'+\
-				  self.dogebtc+'  DOGE:BTC', self.percent_change(self.dogebtc, self.last_week_dogebtc)+'\n'+\
+				  self.dogebtc+'  BTC:DOGE', self.percent_change(self.dogebtc, self.last_week_dogebtc)+'\n'+\
 			  	'$'+self.usddoge+'  USD:DOGE', self.percent_change(self.usddoge, self.last_week_usddoge)+'\n'+\
 			  	'$'+self.usdbtc+'    USD:BTC', self.percent_change(self.usdbtc, self.last_week_usdbtc)+'\n'+\
 			  	'#dogecoin #BTC #dogepricebot'
 		except Exception, e:
 			print str(e)
+	
+	def convert(self):
+		for mention in self.api.mentions_timeline():
+			user = mention.user.screen_name
+			amount = 0
+			print user
+			print mention.text
+			if mention.id not in self.replied_tweetids:
+				if 'convert' in mention.text:
+					if 'doge to usd' in mention.text.lower():
+						words = mention.text.split()
+						for word in words:
+							if word.isnumeric() == True:
+								amount = float(word)
+						if amount != 0:
+							tweet = '@'+str(user)+' wow such convert: '+str(amount)+\
+								    ' dogecoins = $'+str(amount*float(self.usddoge))+\
+								    ' #dogepricebottest'
+							print tweet
+							self.api.update_status(tweet, mention.id)
+							self.replied_tweetids.append(mention.id)
+					elif 'usd to doge' in mention.text.lower():
+						words = mention.text.replace('$','').split()
+						for word in words:
+							if word.isnumeric() == True:
+								amount = float(word)
+						if amount != 0:
+							tweet = '@'+str(user)+' wow such convert: $'+str(amount)+\
+								    ' = '+str(amount/float(self.usddoge))+' dogecoins'+\
+								    ' #dogepricebottest'
+							print tweet
+							self.api.update_status(tweet, mention.id)
+							self.replied_tweetids.append(mention.id)
+			else:
+				print 'Duplicate tweet, skipping'
+
 
 	def stream(self):
 		while True:
@@ -181,4 +219,4 @@ if __name__ == "__main__":
 	bot = DogePriceBot()
 	print bot
 	print ''
-	bot.daily_update()
+	bot.convert()
