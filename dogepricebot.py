@@ -199,6 +199,7 @@ class DogePriceBot:
 			try:
 				print 'Replying to conversion requests:'
 				self.convert()
+				print '...done'
 				print ''
 				self.update_prices()
 				print 'Current time:', self.currenttime
@@ -214,9 +215,9 @@ class DogePriceBot:
 			except Exception, e:
 				print str(e)
 			#Sleep for an hour
-			print 'Sleeping for 60 seconds...'
+			print 'Sleeping for 10 minutes...'
 			print ''
-			time.sleep(60)
+			time.sleep(600)
 
 if __name__ == "__main__":
 	bot = DogePriceBot()
