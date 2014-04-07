@@ -41,7 +41,7 @@ class DogePriceBot:
 	def __init__(self):
 		self.currenttime = datetime.datetime.now().replace(microsecond=0)
 		#Need to update database for minute column
-		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY day DESC, hour DESC").fetchone()
+		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY month DESC, day DESC").fetchone()
 		self.lasttime = datetime.datetime(last_hour_tweet[0], last_hour_tweet[1], last_hour_tweet[2], last_hour_tweet[3], last_hour_tweet[4], second=0, microsecond=0)
 		self.last_hour_dogebtc = last_hour_tweet[5]
 		self.last_hour_usddoge = last_hour_tweet[6]
@@ -92,7 +92,7 @@ class DogePriceBot:
 			'#dogecoin #BTC #dogepricebot'
 		print ''
 		#Comment out when testing
-		#self.api.update_status(status)
+		self.api.update_status(status)
 		#print 'Tweet posted:'
 		print status
 			  #'D'+self.dogeusd+'  DOGE:$', self.percent_change(self.dogeusd, self.last_hour_dogeusd)+'\n'+\
