@@ -13,7 +13,8 @@ It's a fun and easy way to stay on top of DOGE and BTC price movements!
 ---
 
 ###What to expect:
-**UPDATE: You can now use @dogepricebot as a currency conversion calculator**
+**UPDATE: You can now use @dogepricebot as a cryptocurrency conversion calculator**
+
 The conversion functionality is working! Currently the syntax is as follows:
 
     `@dogepricebot convert XXXX DOGE to USD`  
