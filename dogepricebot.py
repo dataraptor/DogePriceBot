@@ -8,10 +8,6 @@ from dogepricebase import DogePriceBase
 
 class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
-	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
-	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
-	access_token = '2409405422-JOZnjcCh4ZiMngnT6x0tEAKRSf9iq8s6nPZoDyr'
-	access_token_secret = 'o3xl4L4WTIFZGlAjUmlylClAVNNJf49OyvCuhdtnsvt83'
 	#consumer_key = ''
 	#consumer_secret = ''
 	#access_token = ''
@@ -33,8 +29,7 @@ class DogePriceBot:
 
 	#Instatiation of the Dogestreamer object
 	streamer = DogePriceStreamer()
-	pricedb = DogePriceBase()
-	replied_tweetids = []
+	db = DogePriceBase()
 
 	currenttime = 0
 	lasttime = 0
@@ -46,7 +41,7 @@ class DogePriceBot:
 	def __init__(self):
 		self.currenttime = datetime.datetime.now().replace(microsecond=0)
 		#Need to update database for minute column
-		last_hour_tweet = self.pricedb.c.execute("SELECT * FROM dogePrices ORDER BY day DESC, hour DESC").fetchone()
+		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY day DESC, hour DESC").fetchone()
 		self.lasttime = datetime.datetime(last_hour_tweet[0], last_hour_tweet[1], last_hour_tweet[2], last_hour_tweet[3], last_hour_tweet[4], second=0, microsecond=0)
 		self.last_hour_dogebtc = last_hour_tweet[5]
 		self.last_hour_usddoge = last_hour_tweet[6]
@@ -103,7 +98,7 @@ class DogePriceBot:
 			  #'D'+self.dogeusd+'  DOGE:$', self.percent_change(self.dogeusd, self.last_hour_dogeusd)+'\n'+\
 		print ''
 		print 'Updating price database...'
-		self.pricedb.update_price_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
+		self.db.update_price_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
 		print '...done'
 		print ''
 			  
@@ -128,7 +123,7 @@ class DogePriceBot:
 			else:
 				last_day = 30
 
-		last_day_tweet = self.pricedb.c.execute("SELECT * FROM dogePrices WHERE (day = ? AND hour = ?)", (last_day, 19)).fetchone()
+		last_day_tweet = self.db.c.execute("SELECT * FROM dogePrices WHERE (day = ? AND hour = ?)", (last_day, 19)).fetchone()
 		self.last_day_dogebtc = last_day_tweet[5]
 		self.last_day_usddoge = last_day_tweet[6]
 		self.last_day_usdbtc = last_day_tweet[7]
@@ -145,7 +140,7 @@ class DogePriceBot:
 		#Need to update for beginning and end of months
 		#Assumption is that this would happen at 5pm everyday
 		last_week = (self.currenttime.day - 7)
-		last_week_tweet = self.pricedb.c.execute("SELECT * FROM dogePrices WHERE (day = ? AND hour = ?)", (last_week, 11)).fetchone()
+		last_week_tweet = self.db.c.execute("SELECT * FROM dogePrices WHERE (day = ? AND hour = ?)", (last_week, 11)).fetchone()
 		try:
 			self.last_week_dogebtc = last_week_tweet[5]
 			self.last_week_usddoge = last_week_tweet[6]
@@ -159,14 +154,17 @@ class DogePriceBot:
 			print str(e)
 	
 	def convert(self):
+		replys = self.db.c.execute("SELECT * FROM replyIDs").fetchall()
+		ids = [reply[1] for reply in replys]
+
 		for mention in self.api.mentions_timeline():
 			user = mention.user.screen_name
 			amount = 0
-			print user
-			print mention.text
-			if mention.id not in self.replied_tweetids:
+			if mention.id not in ids:
 				if 'convert' in mention.text:
-					if 'doge to usd' in mention.text.lower():
+					if 'doge to usd' in mention.text.lower() or 'dogecoins to usd' in mention.text.lower() \
+					or 'dogecoin to usd' in mention.text.lower() or 'doge to dollars' in mention.text.lower() \
+					or 'dogecoins to dollars' in mention.text.lower() or 'dogecoin to dollars' in mention.text.lower():
 						words = mention.text.split()
 						for word in words:
 							if word.isnumeric() == True:
@@ -177,8 +175,10 @@ class DogePriceBot:
 								    ' #dogepricebottest'
 							print tweet
 							self.api.update_status(tweet, mention.id)
-							self.replied_tweetids.append(mention.id)
-					elif 'usd to doge' in mention.text.lower():
+							self.db.update_id_DB(str(user), mention.id)
+					elif 'usd to doge' in mention.text.lower() or 'usd to dogecoins' in mention.text.lower() \
+					or 'usd to dogecoin' in mention.text.lower() or 'dollars to doge' in mention.text.lower() \
+					or 'dollars to dogecoins' in mention.text.lower() or 'dollars to dogecoin' in mention.text.lower():
 						words = mention.text.replace('$','').split()
 						for word in words:
 							if word.isnumeric() == True:
@@ -189,7 +189,7 @@ class DogePriceBot:
 								    ' #dogepricebottest'
 							print tweet
 							self.api.update_status(tweet, mention.id)
-							self.replied_tweetids.append(mention.id)
+							self.db.update_id_DB(str(user), mention.id)
 			else:
 				print 'Duplicate tweet, skipping'
 
