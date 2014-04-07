@@ -23,22 +23,18 @@ class DogePriceStreamer:
 	avg_dogeusd = 0
 
 	def __init__(self):
-		self.cryptsy = self.cryptsy_price()
-		self.bter = self.bter_price()
-		self.cup = self.cup_price()
-		self.usdbtc = float(self.BTC_price())
-		self.avg_dogebtc = self.avg_price()
+		self.update_prices()
 
 	def get_btcdoge_prices(self):
 		#RETURN prices in list [bter, cup, cryptsy, average, usdbtc]
 		return [self.bter, self.cup, self.cryptsy, self.avg_dogebtc, self.usdbtc]
 
 	def update_prices(self):
-		self.cryptsy = self.cryptsy_price()
-		self.bter = self.bter_price()
-		self.cup = self.cup_price()
-		self.usdbtc = float(self.btc_price())
-		self.avg_dogebtc = self.avg_price()
+		self.cryptsy = self.btcdoge_cryptsy()
+		self.bter = self.btcdoge_bter()
+		self.cup = self.btcdoge_coinedup()
+		self.usdbtc = float(self.usdbtc_btce())
+		self.avg_dogebtc = self.avg_btcdoge()
 
 #BTC:DOGE Exchange prices
 
@@ -68,7 +64,7 @@ class DogePriceStreamer:
 
 	def avg_btcdoge(self):
 		btcdogeprices = []
-		btcdogeprices.extend(self.btcdoge_bter(), self.btcdoge_coinedup(), self.btcdoge_cryptsy())
+		btcdogeprices.extend([self.btcdoge_bter(), self.btcdoge_coinedup(), self.btcdoge_cryptsy()])
 		average = reduce(lambda x, y: float(x) + float(y), btcdogeprices)/len(btcdogeprices)
 		return average
 
@@ -93,6 +89,7 @@ class DogePriceStreamer:
 		usdbtcprices.extend(self.usdbtc_btce(), self.usdbtc_cryptsy())
 		average = reduce(lambda x, y: float(x) + float(y), usdbtcprices)/len(usdbtcprices)
 		return average
+
 #DOGE:USD Exchange prices
 
 	def usddoge_crypsty(self):
