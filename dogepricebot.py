@@ -197,6 +197,9 @@ class DogePriceBot:
 	def stream(self):
 		while True:
 			try:
+				print 'Replying to conversion requests:'
+				self.convert()
+				print ''
 				self.update_prices()
 				print 'Current time:', self.currenttime
 				print 'Last tweeted:', self.lasttime
@@ -219,4 +222,4 @@ if __name__ == "__main__":
 	bot = DogePriceBot()
 	print bot
 	print ''
-	bot.convert()
+	bot.stream()
