@@ -103,7 +103,7 @@ class DogePriceBot:
 			  #'D'+self.dogeusd+'  DOGE:$', self.percent_change(self.dogeusd, self.last_hour_dogeusd)+'\n'+\
 		print ''
 		print 'Updating price database...'
-		self.pricedb.update_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
+		self.pricedb.update_price_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
 		print '...done'
 		print ''
 			  

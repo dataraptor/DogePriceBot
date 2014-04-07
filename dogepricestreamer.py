@@ -29,7 +29,7 @@ class DogePriceStreamer:
 		self.usdbtc = float(self.BTC_price())
 		self.avg_dogebtc = self.avg_price()
 
-	def get_prices(self):
+	def get_btcdoge_prices(self):
 		#RETURN prices in list [bter, cup, cryptsy, average, usdbtc]
 		return [self.bter, self.cup, self.cryptsy, self.avg_dogebtc, self.usdbtc]
 
@@ -37,18 +37,20 @@ class DogePriceStreamer:
 		self.cryptsy = self.cryptsy_price()
 		self.bter = self.bter_price()
 		self.cup = self.cup_price()
-		self.usdbtc = float(self.BTC_price())
+		self.usdbtc = float(self.btc_price())
 		self.avg_dogebtc = self.avg_price()
 
-	def cryptsy_price(self):
-		#GET DOGE prices from cryptsy using JSON
+#BTC:DOGE Exchange prices
+
+	def btcdoge_cryptsy(self):
+		#GET DOGE/BTC prices from cryptsy using JSON
 		cryptsy_dogePrices = opener.open('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132')
 		cryptsy_dogejson = json.load(cryptsy_dogePrices)
 		cryptsy_dogelastP = cryptsy_dogejson['return']['markets']['DOGE']['lasttradeprice']
 		cryptsy_dogelastT = cryptsy_dogejson['return']['markets']['DOGE']['lasttradetime']
 		return cryptsy_dogelastP
 
-	def bter_price(self):
+	def btcdoge_bter(self):
 		#GET DOGE prices from Bter using JSON
 		bter_dogePrices = opener.open('http://data.bter.com/api/1/trade/doge_btc')
 		bter_dogejson = json.load(bter_dogePrices)
@@ -57,28 +59,48 @@ class DogePriceStreamer:
 		bter_dogelastT = datetime.datetime.fromtimestamp(int(bter_dogelastT)).strftime('%Y-%m-%d %H:%M:%S')
 		return bter_dogelastP
 
-	def cup_price(self):
+	def btcdoge_coinedup(self):
 		#GET DOGE prices from CoinedUp using wrapper API
-		cup_api = API()
+		coinedup_api = API()
 		pair = 'doge_btc'
-		cup_dogelastP = cup_api.tradingpair(pair).price
-		return cup_dogelastP
+		coinedup_dogelastP = coinedup_api.tradingpair(pair).price
+		return coinedup_dogelastP
 
-	def BTC_price(self):
+	def avg_btcdoge(self):
+		btcdogeprices = []
+		btcdogeprices.extend(self.btcdoge_bter(), self.btcdoge_coinedup(), self.btcdoge_cryptsy())
+		average = reduce(lambda x, y: float(x) + float(y), btcdogeprices)/len(btcdogeprices)
+		return average
+
+#USD:BTC Exchange prices
+
+	def usdbtc_btce(self):
 		#GET BTC prices from btc-e
 		btcePrices = urllib2.urlopen('https://btc-e.com/api/2/btc_usd/ticker')
 		btcejson = json.load(btcePrices)
 		btcelastP = float(btcejson['ticker']['last'])
 		return btcelastP
 
-	def avg_price(self):
-		#GET time and prices from exchange methods
-		dogeprices = []
-		dogeprices.extend((self.bter, self.cryptsy, self.cup))
-		#AVG prices
-		avg_dogelastP = reduce(lambda x, y: float(x) + float(y), dogeprices) / len(dogeprices)
-		#RETURN bter, cup, cryptsy, avg
-		return avg_dogelastP
+	def usdbtc_cryptsy(self):
+		cryptsy_btcPrices = opener.open('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=2')
+		cryptsy_btcjson = json.load(cryptsy_btcPrices)
+		cryptsy_btclastP = cryptsy_dogejson['return']['markets']['BTC']['lasttradeprice']
+		cryptsy_btclastT = cryptsy_dogejson['return']['markets']['BTC']['lasttradetime']
+		return cryptsy_dogelastP
+
+	def avg_usdbtc(self):
+		usdbtcprices = []
+		usdbtcprices.extend(self.usdbtc_btce(), self.usdbtc_cryptsy())
+		average = reduce(lambda x, y: float(x) + float(y), usdbtcprices)/len(usdbtcprices)
+		return average
+#DOGE:USD Exchange prices
+
+	def usddoge_crypsty(self):
+		cryptsy_dogePrices = opener.open('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=182')
+		cryptsy_dogejson = json.load(cryptsy_dogePrices)
+		cryptsy_dogelastP = cryptsy_dogejson['return']['markets']['DOGE']['lasttradeprice']
+		cryptsy_dogelastT = cryptsy_dogejson['return']['markets']['DOGE']['lasttradetime']
+		return cryptsy_dogelastP
 
 	def __str__(self):
 		return 'TIME:     '+str(datetime.datetime.now().replace(microsecond=0))+'\n'+\
