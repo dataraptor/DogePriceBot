@@ -8,6 +8,10 @@ from dogepricebase import DogePriceBase
 
 class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
+	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
+	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
+	access_token = '2409405422-JOZnjcCh4ZiMngnT6x0tEAKRSf9iq8s6nPZoDyr'
+	access_token_secret = 'o3xl4L4WTIFZGlAjUmlylClAVNNJf49OyvCuhdtnsvt83'
 	#consumer_key = ''
 	#consumer_secret = ''
 	#access_token = ''
@@ -41,7 +45,7 @@ class DogePriceBot:
 	def __init__(self):
 		self.currenttime = datetime.datetime.now().replace(microsecond=0)
 		#Need to update database for minute column
-		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY month DESC, day DESC").fetchone()
+		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY month DESC, day DESC, hour DESC").fetchone()
 		self.lasttime = datetime.datetime(last_hour_tweet[0], last_hour_tweet[1], last_hour_tweet[2], last_hour_tweet[3], last_hour_tweet[4], second=0, microsecond=0)
 		self.last_hour_dogebtc = last_hour_tweet[5]
 		self.last_hour_usddoge = last_hour_tweet[6]
@@ -79,9 +83,12 @@ class DogePriceBot:
 		self.usddoge = '%.6f' % self.usddoge
 
 	def __str__(self):
-		return str(self.dogebtc)+'  DOGE:BTC'+'\n'+\
+		return 'Current ['+str(self.currenttime)+']:'+'\n'+str(self.dogebtc)+'  DOGE:BTC'+'\n'+\
 			   '$'+str(self.usddoge)+'   USD:DOGE'+'\n'+\
-			   '$'+str(self.usdbtc)+'     USD:BTC'
+			   '$'+str(self.usdbtc)+'     USD:BTC'+'\n'+'\n'+\
+			   'Last ['+str(self.lasttime)+']:'+'\n'+str(self.last_hour_dogebtc)+'  DOGE:BTC'+'\n'+\
+			   '$'+str(self.last_hour_usddoge)+'   USD:DOGE'+'\n'+\
+			   '$'+str(self.last_hour_usdbtc)+'     USD:BTC'
 			   #'D'+str(self.dogeusd)+'    DOGE:USD'+'\n'+\
 			   
 	def hourly_update(self):
@@ -101,6 +108,11 @@ class DogePriceBot:
 		self.db.update_price_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
 		print '...done'
 		print ''
+		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY month DESC, day DESC").fetchone()
+		self.lasttime = datetime.datetime(last_hour_tweet[0], last_hour_tweet[1], last_hour_tweet[2], last_hour_tweet[3], last_hour_tweet[4], second=0, microsecond=0)
+		self.last_hour_dogebtc = last_hour_tweet[5]
+		self.last_hour_usddoge = last_hour_tweet[6]
+		self.last_hour_usdbtc = last_hour_tweet[7]
 			  
 	def daily_update(self):
 		#Need to update for beginning and end of months
@@ -171,8 +183,8 @@ class DogePriceBot:
 								amount = float(word)
 						if amount != 0:
 							tweet = '@'+str(user)+' wow such convert: '+str(amount)+\
-								    ' dogecoins = $'+str(amount*float(self.usddoge))+\
-								    ' #dogepricebottest'
+								    ' #dogecoin = $'+str(amount*float(self.usddoge))+\
+								    ' #dogepricebot'
 							print tweet
 							self.api.update_status(tweet, mention.id)
 							self.db.update_id_DB(str(user), mention.id)
@@ -185,8 +197,36 @@ class DogePriceBot:
 								amount = float(word)
 						if amount != 0:
 							tweet = '@'+str(user)+' wow such convert: $'+str(amount)+\
-								    ' = '+str(amount/float(self.usddoge))+' dogecoins'+\
-								    ' #dogepricebottest'
+								    ' = '+str(amount/float(self.usddoge))+' #dogecoin'+\
+								    ' #dogepricebot'
+							print tweet
+							self.api.update_status(tweet, mention.id)
+							self.db.update_id_DB(str(user), mention.id)
+					elif 'doge to btc' in mention.text.lower() or 'dogecoins to btc' in mention.text.lower() \
+					or 'dogecoin to btc' in mention.text.lower() or 'doge to bitcoin' in mention.text.lower() \
+					or 'dogecoins to bitcoin' in mention.text.lower() or 'dogecoin to bitcoin' in mention.text.lower():
+						words = mention.text.split()
+						for word in words:
+							if word.isnumeric() == True:
+								amount = float(word)
+						if amount != 0:
+							tweet = '@'+str(user)+' wow such convert: '+str(amount)+\
+								    ' #dogecoin ='+str(amount*float(self.dogebtc))+\
+								    ' #BTC #dogepricebot'
+							print tweet
+							self.api.update_status(tweet, mention.id)
+							self.db.update_id_DB(str(user), mention.id)
+					elif 'btc to doge' in mention.text.lower() or 'btc to dogecoins' in mention.text.lower() \
+					or 'btc to dogecoin' in mention.text.lower() or 'bitcoin to doge' in mention.text.lower() \
+					or 'bitcoin to dogecoins' in mention.text.lower() or 'bitcoin to dogecoin' in mention.text.lower():
+						words = mention.text.split()
+						for word in words:
+							if word.isnumeric() == True:
+								amount = float(word)
+						if amount != 0:
+							tweet = '@'+str(user)+' wow such convert: '+str(amount)+\
+								    ' #BTC ='+str(amount/float(self.dogebtc))+\
+								    ' #dogecoin #dogepricebot'
 							print tweet
 							self.api.update_status(tweet, mention.id)
 							self.db.update_id_DB(str(user), mention.id)
@@ -207,7 +247,6 @@ class DogePriceBot:
 				if (self.currenttime - self.lasttime).seconds/3600 >= 1:
 					print 'Hour has passed, updating now'
 					self.hourly_update()
-					self.lasttime = self.currenttime
 				else:
 					print self.currenttime, 'Hour has not yet passed'
 			#if new hour, hourly_update()
@@ -223,4 +262,3 @@ if __name__ == "__main__":
 	bot = DogePriceBot()
 	print bot
 	print ''
-	bot.stream()
