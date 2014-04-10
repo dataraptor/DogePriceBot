@@ -8,10 +8,6 @@ from dogepricebase import DogePriceBase
 
 class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
-	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
-	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
-	access_token = '2409405422-JOZnjcCh4ZiMngnT6x0tEAKRSf9iq8s6nPZoDyr'
-	access_token_secret = 'o3xl4L4WTIFZGlAjUmlylClAVNNJf49OyvCuhdtnsvt83'
 	#consumer_key = ''
 	#consumer_secret = ''
 	#access_token = ''
@@ -171,6 +167,8 @@ class DogePriceBot:
 
 		for mention in self.api.mentions_timeline():
 			user = mention.user.screen_name
+			if str(user) == "dogepricebot"
+				continue
 			amount = 0
 			if mention.id not in ids:
 				if 'convert' in mention.text:
