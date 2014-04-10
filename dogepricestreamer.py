@@ -1,4 +1,5 @@
 #dogestreamer.py
+# -*- coding: iso-8859-15 -*-
 import time
 import json
 import urllib2
@@ -68,14 +69,20 @@ class DogePriceStreamer:
 		average = reduce(lambda x, y: float(x) + float(y), btcdogeprices)/len(btcdogeprices)
 		return average
 
-#USD:BTC Exchange prices
+#BTC Exchange prices
 
 	def usdbtc_btce(self):
 		#GET BTC prices from btc-e
 		btcePrices = urllib2.urlopen('https://btc-e.com/api/2/btc_usd/ticker')
 		btcejson = json.load(btcePrices)
-		btcelastP = float(btcejson['ticker']['last'])
+		btcelastP = float(btcejson['ticker']['avg'])
 		return btcelastP
+
+	def eurbtc_btce(self):
+		btcePrices = urllib2.urlopen('https://btc-e.com/api/2/btc_eur/ticker')
+		btcejson = json.load(btcePrices)
+		btcelastP = float(btcejson['ticker']['avg'])
+		return btcelastP		
 
 	def usdbtc_cryptsy(self):
 		cryptsy_btcPrices = opener.open('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=2')
@@ -112,7 +119,11 @@ class DogePriceStreamer:
 		print '          DOGE/BTC:  BTC/USD:  DOGE/USD'
 		while True:
 			try:
-				print self
+				print '$'+str(self.usdbtc_btce())
+				print str(self.eurbtc_btce())+'€'
 			except Exception, e:
 				print str(e)
 			time.sleep(10)
+
+s = DogePriceStreamer()
+s.stream()
