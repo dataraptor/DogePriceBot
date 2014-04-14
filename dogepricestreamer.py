@@ -34,7 +34,7 @@ class DogePriceStreamer:
 		self.cryptsy = self.btcdoge_cryptsy()
 		self.bter = self.btcdoge_bter()
 		self.cup = self.btcdoge_coinedup()
-		self.usdbtc = float(self.usdbtc_btce())
+		self.usdbtc = float(self.btc_to('USD'))
 		self.avg_dogebtc = self.avg_btcdoge()
 
 #BTC:DOGE Exchange prices
@@ -70,32 +70,24 @@ class DogePriceStreamer:
 		return average
 
 #BTC Exchange prices
-
-	def usdbtc_btce(self):
-		#GET BTC prices from btc-e
-		btcePrices = urllib2.urlopen('https://btc-e.com/api/2/btc_usd/ticker')
-		btcejson = json.load(btcePrices)
-		btcelastP = float(btcejson['ticker']['avg'])
-		return btcelastP
-
-	def eurbtc_btce(self):
-		btcePrices = urllib2.urlopen('https://btc-e.com/api/2/btc_eur/ticker')
-		btcejson = json.load(btcePrices)
-		btcelastP = float(btcejson['ticker']['avg'])
-		return btcelastP		
-
-	def usdbtc_cryptsy(self):
-		cryptsy_btcPrices = opener.open('http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=2')
-		cryptsy_btcjson = json.load(cryptsy_btcPrices)
-		cryptsy_btclastP = cryptsy_dogejson['return']['markets']['BTC']['lasttradeprice']
-		cryptsy_btclastT = cryptsy_dogejson['return']['markets']['BTC']['lasttradetime']
-		return cryptsy_dogelastP
-
-	def avg_usdbtc(self):
-		usdbtcprices = []
-		usdbtcprices.extend(self.usdbtc_btce(), self.usdbtc_cryptsy())
-		average = reduce(lambda x, y: float(x) + float(y), usdbtcprices)/len(usdbtcprices)
-		return average
+#Refactored to work with Bitcoin Average website
+	
+	def btc_to(self, ticker):
+		currency_codes = ['AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'EUR', 'GBP', 'HKD', \
+						  'ILS', 'JPY', 'NOK', 'NZD', 'PLN', 'RUB', 'SEK', 'SGD', \
+						  'TRY', 'USD', 'ZAR']
+		if len(ticker) > 3 or len(ticker) < 3:
+			print 'Invalid currency code.'
+		elif ticker not in currency_codes:
+			print 'Do not yet have currency exchange rates.'
+		else:
+			btc_json = json.load(opener.open('https://api.bitcoinaverage.com/ticker/'+ticker))
+			btc_rate = btc_json['last']
+			btc_vol = btc_json['total_vol']
+			btc_ask = btc_json['ask']
+			btc_bid = btc_json['bid']
+			btc_spread = btc_ask - btc_bid
+			return btc_rate
 
 #DOGE:USD Exchange prices
 
@@ -124,6 +116,3 @@ class DogePriceStreamer:
 			except Exception, e:
 				print str(e)
 			time.sleep(10)
-
-s = DogePriceStreamer()
-s.stream()
