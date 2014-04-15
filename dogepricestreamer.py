@@ -18,6 +18,9 @@ opener.addheaders = [('User-agent','Mozilla/5.0')]
 class DogePriceStreamer:
 	#Global variables
 	cryptsy, bter, cup, vrex, usdbtc, avg_dogeusd = 0, 0, 0, 0, 0, 0
+	currency_codes = ['AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'EUR', 'GBP', 'HKD', \
+						  'ILS', 'JPY', 'NOK', 'NZD', 'PLN', 'RUB', 'SEK', 'SGD', \
+						  'TRY', 'USD', 'ZAR']
 
 	def __init__(self):
 		self.update_prices()
@@ -75,12 +78,9 @@ class DogePriceStreamer:
 #Refactored to work with Bitcoin Average website
 	
 	def btc_to(self, ticker):
-		currency_codes = ['AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'EUR', 'GBP', 'HKD', \
-						  'ILS', 'JPY', 'NOK', 'NZD', 'PLN', 'RUB', 'SEK', 'SGD', \
-						  'TRY', 'USD', 'ZAR']
 		if len(ticker) > 3 or len(ticker) < 3:
 			print 'Invalid currency code.'
-		elif ticker not in currency_codes:
+		elif ticker not in self.currency_codes:
 			print 'Do not yet support this currency.'
 		else:
 			btc_json = json.load(opener.open('https://api.bitcoinaverage.com/ticker/'+ticker))
@@ -106,7 +106,7 @@ class DogePriceStreamer:
 			   'COINEDUP: '+str(self.cup)+' : $'+str(self.usdbtc)+' : $'+str(float(self.cup)*self.usdbtc)+'\n'+\
 			   'CRYPTSY:  '+str(self.cryptsy)+' : $'+str(self.usdbtc)+' : $'+str(float(self.cryptsy)*self.usdbtc)+'\n'+\
 			   'VIRCUREX:  '+str(self.vrex)+' : $'+str(self.usdbtc)+' : $'+str(float(self.vrex)*self.usdbtc)+'\n'+\
-			   'AVERAGE:  '+str(self.avg_dogebtc)+' : $'+str(self.usdbtc)+' : $'+str(float(self.avg_dogebtc)*self.usdbtc)
+			   'AVERAGE:  '+str(self.avg_dogebtc)+' : $'+str(self.usdbtc)+' : $'+str(float(self.avg_dogebtc)*self.usdbtc)+'\n'
 
 	#Continuous price stream
 	def stream(self):

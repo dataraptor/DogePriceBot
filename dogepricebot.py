@@ -78,6 +78,13 @@ class DogePriceBot:
 		#self.dogeusd = '%.2f' % self.dogeusd
 		self.usddoge = '%.6f' % self.usddoge
 
+	def default_tweet(self):
+		return '['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
+			self.dogebtc+'  BTC:DOGE '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
+			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
+			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
+			'#dogecoin #BTC'
+
 	def __str__(self):
 		return 'Current ['+str(self.currenttime)+']:'+'\n'+str(self.dogebtc)+'  DOGE:BTC'+'\n'+\
 			   '$'+str(self.usddoge)+'   USD:DOGE'+'\n'+\
@@ -88,11 +95,7 @@ class DogePriceBot:
 			   #'D'+str(self.dogeusd)+'    DOGE:USD'+'\n'+\
 			   
 	def hourly_update(self):
-		status = '['+self.currenttime.time().strftime("%H")+':'+self.currenttime.time().strftime("%M")+' EST] Avg #DOGE prices:'+'\n'+\
-			self.dogebtc+'  BTC:DOGE '+self.percent_change(self.dogebtc, self.last_hour_dogebtc)+'\n'+\
-			'$'+self.usddoge+'   $:DOGE   '+self.percent_change(self.usddoge, self.last_hour_usddoge)+'\n'+\
-			'$'+self.usdbtc+'     $:BTC    '+self.percent_change(self.usdbtc, self.last_hour_usdbtc)+'\n'+\
-			'#dogecoin #BTC #dogepricebot'
+		status = self.default_tweet()
 		print ''
 		#Comment out when testing
 		self.api.update_status(status)
@@ -104,7 +107,7 @@ class DogePriceBot:
 		self.db.update_price_DB(self.currenttime, self.dogebtc, self.usddoge, self.usdbtc)
 		print '...done'
 		print ''
-		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY month DESC, day DESC").fetchone()
+		last_hour_tweet = self.db.c.execute("SELECT * FROM dogePrices ORDER BY month DESC, day DESC, hour DESC").fetchone()
 		self.lasttime = datetime.datetime(last_hour_tweet[0], last_hour_tweet[1], last_hour_tweet[2], last_hour_tweet[3], last_hour_tweet[4], second=0, microsecond=0)
 		self.last_hour_dogebtc = last_hour_tweet[5]
 		self.last_hour_usddoge = last_hour_tweet[6]
@@ -167,70 +170,32 @@ class DogePriceBot:
 
 		for mention in self.api.mentions_timeline():
 			user = mention.user.screen_name
-			if str(user) == "dogepricebot"
+			if user == "dogepricebot":
 				continue
 			amount = 0
 			if mention.id not in ids:
 				if 'convert' in mention.text:
-					if 'doge to usd' in mention.text.lower() or 'dogecoins to usd' in mention.text.lower() \
-					or 'dogecoin to usd' in mention.text.lower() or 'doge to dollars' in mention.text.lower() \
-					or 'dogecoins to dollars' in mention.text.lower() or 'dogecoin to dollars' in mention.text.lower():
-						words = mention.text.split()
-						for word in words:
-							if word.isnumeric() == True:
-								amount = float(word)
-						if amount != 0:
-							tweet = '@'+str(user)+' wow such convert: '+str(amount)+\
-								    ' #dogecoin = $'+str(amount*float(self.usddoge))+\
-								    ' #dogepricebot'
+					words = mention.text.split(" ")
+					currency = ''
+					for word in words:
+						if word.isnumeric() == True:
+							amount = float(word)
+						if word in self.streamer.currency_codes:
+							currency = word
+					if amount != 0:
+						if 'doge to' in mention.text.lower() or 'dogecoins to' in mention.text.lower() or 'dogecoin to' in mention.text.lower():
+							tweet = '@%s wow such convert: %.1f #dogecoin = %.2f %s' % (user, float(amount), float(amount)*float(self.dogebtc)*float(self.streamer.btc_to(currency)), currency)
 							print tweet
 							self.api.update_status(tweet, mention.id)
-							self.db.update_id_DB(str(user), mention.id)
-					elif 'usd to doge' in mention.text.lower() or 'usd to dogecoins' in mention.text.lower() \
-					or 'usd to dogecoin' in mention.text.lower() or 'dollars to doge' in mention.text.lower() \
-					or 'dollars to dogecoins' in mention.text.lower() or 'dollars to dogecoin' in mention.text.lower():
-						words = mention.text.replace('$','').split()
-						for word in words:
-							if word.isnumeric() == True:
-								amount = float(word)
-						if amount != 0:
-							tweet = '@'+str(user)+' wow such convert: $'+str(amount)+\
-								    ' = '+str(amount/float(self.usddoge))+' #dogecoin'+\
-								    ' #dogepricebot'
+							self.db.update_id_DB(user, mention.id)
+
+						elif 'to doge' in mention.text.lower() or 'to dogecoins' in mention.text.lower() or 'to dogecoin' in mention.text.lower():
+							tweet = '@%s wow such convert: %.1f %s = %.2f #dogecoin' % (user, float(amount), currency, float(amount)/float(self.streamer.btc_to(currency))/float(self.dogebtc))
 							print tweet
 							self.api.update_status(tweet, mention.id)
-							self.db.update_id_DB(str(user), mention.id)
-					elif 'doge to btc' in mention.text.lower() or 'dogecoins to btc' in mention.text.lower() \
-					or 'dogecoin to btc' in mention.text.lower() or 'doge to bitcoin' in mention.text.lower() \
-					or 'dogecoins to bitcoin' in mention.text.lower() or 'dogecoin to bitcoin' in mention.text.lower():
-						words = mention.text.split()
-						for word in words:
-							if word.isnumeric() == True:
-								amount = float(word)
-						if amount != 0:
-							tweet = '@'+str(user)+' wow such convert: '+str(amount)+\
-								    ' #dogecoin ='+str(amount*float(self.dogebtc))+\
-								    ' #BTC #dogepricebot'
-							print tweet
-							self.api.update_status(tweet, mention.id)
-							self.db.update_id_DB(str(user), mention.id)
-					elif 'btc to doge' in mention.text.lower() or 'btc to dogecoins' in mention.text.lower() \
-					or 'btc to dogecoin' in mention.text.lower() or 'bitcoin to doge' in mention.text.lower() \
-					or 'bitcoin to dogecoins' in mention.text.lower() or 'bitcoin to dogecoin' in mention.text.lower():
-						words = mention.text.split()
-						for word in words:
-							if word.isnumeric() == True:
-								amount = float(word)
-						if amount != 0:
-							tweet = '@'+str(user)+' wow such convert: '+str(amount)+\
-								    ' #BTC ='+str(amount/float(self.dogebtc))+\
-								    ' #dogecoin #dogepricebot'
-							print tweet
-							self.api.update_status(tweet, mention.id)
-							self.db.update_id_DB(str(user), mention.id)
+							self.db.update_id_DB(user, mention.id)
 			else:
 				print 'Duplicate tweet, skipping'
-
 
 	def stream(self):
 		while True:
@@ -258,5 +223,4 @@ class DogePriceBot:
 
 if __name__ == "__main__":
 	bot = DogePriceBot()
-	print bot
-	print ''
+	bot.stream()
