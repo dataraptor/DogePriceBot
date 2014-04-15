@@ -17,24 +17,21 @@ opener.addheaders = [('User-agent','Mozilla/5.0')]
 
 class DogePriceStreamer:
 	#Global variables
-	cryptsy = 0
-	bter = 0
-	cup = 0
-	usdbtc = 0
-	avg_dogeusd = 0
+	cryptsy, bter, cup, vrex, usdbtc, avg_dogeusd = 0, 0, 0, 0, 0, 0
 
 	def __init__(self):
 		self.update_prices()
 
-	def get_btcdoge_prices(self):
+	#def get_btcdoge_prices(self):
 		#RETURN prices in list [bter, cup, cryptsy, average, usdbtc]
-		return [self.bter, self.cup, self.cryptsy, self.avg_dogebtc, self.usdbtc]
+		#return [self.bter, self.cup, self.cryptsy, self.avg_dogebtc, self.usdbtc]
 
 	def update_prices(self):
 		self.cryptsy = self.btcdoge_cryptsy()
 		self.bter = self.btcdoge_bter()
 		self.cup = self.btcdoge_coinedup()
-		self.usdbtc = float(self.btc_to('USD'))
+		self.vrex = self.btcdoge_vircurex()
+		self.usdbtc = self.btc_to('USD')
 		self.avg_dogebtc = self.avg_btcdoge()
 
 #BTC:DOGE Exchange prices
@@ -63,9 +60,14 @@ class DogePriceStreamer:
 		coinedup_dogelastP = coinedup_api.tradingpair(pair).price
 		return coinedup_dogelastP
 
+	def btcdoge_vircurex(self):
+		vrex_dogejson = json.load(opener.open('https://api.vircurex.com/api/get_info_for_1_currency.json?base=DOGE&alt=BTC'))
+		vrex_dogelastP = vrex_dogejson['last_trade']
+		return vrex_dogelastP
+
 	def avg_btcdoge(self):
 		btcdogeprices = []
-		btcdogeprices.extend([self.btcdoge_bter(), self.btcdoge_coinedup(), self.btcdoge_cryptsy()])
+		btcdogeprices.extend([self.btcdoge_bter(), self.btcdoge_coinedup(), self.btcdoge_cryptsy(), self.btcdoge_vircurex()])
 		average = reduce(lambda x, y: float(x) + float(y), btcdogeprices)/len(btcdogeprices)
 		return average
 
@@ -79,7 +81,7 @@ class DogePriceStreamer:
 		if len(ticker) > 3 or len(ticker) < 3:
 			print 'Invalid currency code.'
 		elif ticker not in currency_codes:
-			print 'Do not yet have currency exchange rates.'
+			print 'Do not yet support this currency.'
 		else:
 			btc_json = json.load(opener.open('https://api.bitcoinaverage.com/ticker/'+ticker))
 			btc_rate = btc_json['last']
@@ -103,6 +105,7 @@ class DogePriceStreamer:
 		       'BTER:     '+str(self.bter)+' : $'+str(self.usdbtc)+' : $'+str(float(self.bter)*self.usdbtc)+'\n'+\
 			   'COINEDUP: '+str(self.cup)+' : $'+str(self.usdbtc)+' : $'+str(float(self.cup)*self.usdbtc)+'\n'+\
 			   'CRYPTSY:  '+str(self.cryptsy)+' : $'+str(self.usdbtc)+' : $'+str(float(self.cryptsy)*self.usdbtc)+'\n'+\
+			   'VIRCUREX:  '+str(self.vrex)+' : $'+str(self.usdbtc)+' : $'+str(float(self.vrex)*self.usdbtc)+'\n'+\
 			   'AVERAGE:  '+str(self.avg_dogebtc)+' : $'+str(self.usdbtc)+' : $'+str(float(self.avg_dogebtc)*self.usdbtc)
 
 	#Continuous price stream
@@ -111,8 +114,8 @@ class DogePriceStreamer:
 		print '          DOGE/BTC:  BTC/USD:  DOGE/USD'
 		while True:
 			try:
-				print '$'+str(self.usdbtc_btce())
-				print str(self.eurbtc_btce())+'€'
+				self.update_prices()
+				print self
 			except Exception, e:
 				print str(e)
 			time.sleep(10)
