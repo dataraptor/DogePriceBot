@@ -3,8 +3,8 @@ import tweepy
 import time, datetime, calendar
 import json, urllib2
 import string
-from dogepricestreamer import DogePriceStreamer
-from dogepricebase import DogePriceBase
+from pricestreamer import Streamer
+from dbwrapper import Wrapper
 
 class DogePriceBot:
 	# Consumer keys and access tokens, used for OAuth
@@ -28,8 +28,8 @@ class DogePriceBot:
 	#print('Friends: ', user.friends_count)
 
 	#Instatiation of the Dogestreamer object
-	streamer = DogePriceStreamer()
-	db = DogePriceBase()
+	streamer = Streamer()
+	db = Wrapper()
 
 	currenttime = 0
 	lasttime = 0
