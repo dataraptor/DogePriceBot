@@ -39,8 +39,8 @@ You can simply follow @dogepricebot to get hourly price updates, or you can inte
 
 The syntax is as follows:
 
-    `@dogepricebot convert 1000 DOGE to USD`  
-    `@dogepricebot convert 50 SGD to dogecoin`  
+    @dogepricebot convert 1000 DOGE to USD  
+    @dogepricebot convert 50 SGD to dogecoin  
 
 You'll notice that DOGE, dogecoin, and so on are used interchangeably. Any and all of these variations should work, the program is not case sensitive.
 
@@ -48,11 +48,11 @@ However, when defining the alt currency you must use the appropriate currency co
 
 The response should look like:
 
-    `@twitter_user wow such convert: 1000.0 #dogecoin = 0.46 USD`
+    @twitter_user wow such convert: 1000.0 #dogecoin = 0.46 USD
 
 Or:
 
-    `@twitter_user wow such convert: 50.0 SGD = 90114.45 #dogecoin`
+    @twitter_user wow such convert: 50.0 SGD = 90114.45 #dogecoin
 
 However, it will not respond to users whose tweets are protected. I don't think there's much I can do there, but I will see.
 
