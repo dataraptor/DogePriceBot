@@ -173,27 +173,38 @@ class DogePriceBot:
 			if user == "dogepricebot":
 				continue
 			amount = 0
+			#First check to see if we've replied to this tweet before
 			if mention.id not in ids:
-				if 'convert' in mention.text:
+				#Next, check to see if they have the word 'convert' in the tweet
+				if 'convert' in mention.text.lower():
+					#Split the words into a list
 					words = mention.text.split(" ")
 					currency = ''
 					for word in words:
+						#Parse through the list looking for a numeric amount and a currency code
 						if word.isnumeric() == True:
 							amount = float(word)
-						if word in self.streamer.currency_codes:
+						if word.upper() in self.streamer.currency_codes:
 							currency = word
-					if amount != 0:
-						if 'doge to' in mention.text.lower() or 'dogecoins to' in mention.text.lower() or 'dogecoin to' in mention.text.lower():
-							tweet = '@%s wow such convert: %.1f #dogecoin = %.2f %s' % (user, float(amount), float(amount)*float(self.dogebtc)*float(self.streamer.btc_to(currency)), currency)
-							print tweet
-							self.api.update_status(tweet, mention.id)
-							self.db.update_id_DB(user, mention.id)
-
-						elif 'to doge' in mention.text.lower() or 'to dogecoins' in mention.text.lower() or 'to dogecoin' in mention.text.lower():
-							tweet = '@%s wow such convert: %.1f %s = %.2f #dogecoin' % (user, float(amount), currency, float(amount)/float(self.streamer.btc_to(currency))/float(self.dogebtc))
-							print tweet
-							self.api.update_status(tweet, mention.id)
-							self.db.update_id_DB(user, mention.id)
+					if currency not in self.streamer.currency_codes:
+						tweet = '@%s such sorry! either invalid currency code or I don\'t yet support that currency'
+						print tweet
+						self.api.update_status(tweet, mention.id)
+						self.db.update_id_DB(user, mention.id)
+					else:
+						if amount != 0:
+							#Direct exchange rate
+							if 'doge to' in mention.text.lower() or 'dogecoins to' in mention.text.lower() or 'dogecoin to' in mention.text.lower():
+								tweet = '@%s wow such convert: %.1f #dogecoin = %.2f %s' % (user, float(amount), float(amount)*float(self.dogebtc)*float(self.streamer.btc_to(currency)), currency)
+								print tweet
+								self.api.update_status(tweet, mention.id)
+								self.db.update_id_DB(user, mention.id)
+							#Indirect exchange rate
+							elif 'to doge' in mention.text.lower() or 'to dogecoins' in mention.text.lower() or 'to dogecoin' in mention.text.lower():
+								tweet = '@%s wow such convert: %.1f %s = %.2f #dogecoin' % (user, float(amount), currency, float(amount)/float(self.streamer.btc_to(currency))/float(self.dogebtc))
+								print tweet
+								self.api.update_status(tweet, mention.id)
+								self.db.update_id_DB(user, mention.id)
 			else:
 				print 'Duplicate tweet, skipping'
 
