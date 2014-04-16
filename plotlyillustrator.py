@@ -70,25 +70,55 @@ graph_data.append(trace1)
 graph_data.append(trace2)
 
 layout = {
-	'xaxis': {
-		'title': 'Time',
-		'titlefont': {
-			'family':'Verdana, sans-serif'
-			},
+		'xaxis' : {
+		"showline" : True,
+	    "mirror" : "ticks",
+	    "linecolor" : "#636363",
+	    "linewidth" : 6,
+
+	    "showgrid" : True,
+	    "gridcolor" : "#bdbdbd",
+	    "gridwidth" : 2,
+
+	    "zeroline" : True,
+	    "zerolinecolor" : "#969696",
+	    "zerolinewidth" : 4,
+
+	    'title' : 'Time'
 		},
-	'yaxis': {
-		'title': 'BTC:DOGE',
-		'titlefont': {
-			'family':'Verdana, sans-serif'
-			},
+	'yaxis' : {
+		"showline" : True,
+	    "mirror" : "ticks",
+	    "linecolor" : "#636363",
+	    "linewidth" : 6,
+
+	    "showgrid" : True,
+	    "gridcolor" : "#bdbdbd",
+	    "gridwidth" : 2,
+
+	    "zeroline" : True,
+	    "zerolinecolor" : "#969696",
+	    "zerolinewidth" : 4,
+
+	    'title' : 'BTC:DOGE'
 		},
-	'yaxis2':{
-		'title': '$:DOGE',
-		'titlefont': {
-			'family':'Verdana, sans-serif'
-			},
-		'overlaying':'y',
-		'side':'right',
+	'yaxis2': {
+		"showline" : True,
+	    "mirror" : "ticks",
+	    "linecolor" : "#636363",
+	    "linewidth" : 6,
+
+	    "showgrid" : True,
+	    "gridcolor" : "#bdbdbd",
+	    "gridwidth" : 2,
+
+	    "zeroline" : True,
+	    "zerolinecolor" : "#969696",
+	    "zerolinewidth" : 4,
+
+	    'title' : 'USD:DOGE',
+	    'overlaying' : 'y',
+	    'side' : 'right'
 		},
 	'title': 'Crypto Exchange Rates'
 }

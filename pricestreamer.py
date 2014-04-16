@@ -21,6 +21,8 @@ class Streamer:
 	currency_codes = ['AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'EUR', 'GBP', 'HKD', \
 						  'ILS', 'JPY', 'NOK', 'NZD', 'PLN', 'RUB', 'SEK', 'SGD', \
 						  'TRY', 'USD', 'ZAR']
+	#Expanding to other cryptocurrencies
+	cryptocurrency_codes = []
 
 	def __init__(self):
 		self.update_prices()
