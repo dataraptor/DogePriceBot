@@ -7,10 +7,10 @@ from datetime import datetime
 
 class Streamer:
 	#Global variables
-	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
-	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
-	access_token = '2409405422-JOZnjcCh4ZiMngnT6x0tEAKRSf9iq8s6nPZoDyr'
-	access_token_secret = 'o3xl4L4WTIFZGlAjUmlylClAVNNJf49OyvCuhdtnsvt83'
+	consumer_key = ''
+	consumer_secret = ''
+	access_token = ''
+	access_token_secret = ''
 
 	# OAuth process, using the keys and tokens
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -19,9 +19,28 @@ class Streamer:
 	# Creation of the actual interface, using authentication
 	api = tweepy.API(auth)
 
-	currency_codes = ['AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'EUR', 'GBP', 'HKD', \
-					  'ILS', 'JPY', 'NOK', 'NZD', 'PLN', 'RUB', 'SEK', 'SGD', \
-					  'TRY', 'USD', 'ZAR']
+	#All 168 foreign currencies able to be converted via bitcoinaverage
+	#Bypasses openexchangerates.org
+	currency_codes = ['AED', 'AFN' , 'ALL' , 'AMD' , 'ANG' , 'AOA' , 'ARS' , 'AUD' , 'AWG' , \
+				      'AZN' , 'BAM' , 'BBD' , 'BDT' , 'BGN' , 'BHD' , 'BIF' , 'BMD' , 'BND' ,\
+				      'BOB' , 'BRL' , 'BSD' , 'BTC' , 'BTN' , 'BWP' , 'BYR' , 'BZD' , 'CAD' ,\
+				      'CDF' , 'CHF' , 'CLF' , 'CLP' , 'CNY' , 'COP' , 'CRC' , 'CUP' , 'CVE' ,\
+				      'CZK' , 'DJF' , 'DKK' , 'DOP' , 'DZD' , 'EEK' , 'EGP' , 'ERN' , 'ETB' ,\
+				      'EUR' , 'FJD' , 'FKP' , 'GBP' , 'GEL' , 'GGP' , 'GHS' , 'GIP' , 'GMD' ,\
+				      'GNF' , 'GTQ' , 'GYD' , 'HKD' , 'HNL' , 'HRK' , 'HTG' , 'HUF' , 'IDR' ,\
+				      'ILS' , 'IMP' , 'INR' , 'IQD' , 'IRR' , 'ISK' , 'JEP' , 'JMD' , 'JOD' ,\
+				      'JPY' , 'KES' , 'KGS' , 'KHR' , 'KMF' , 'KPW' , 'KRW' , 'KWD' , 'KYD' ,\
+				      'KZT' , 'LAK' , 'LBP' , 'LKR' , 'LRD' , 'LSL' , 'LTL' , 'LVL' , 'LYD' ,\
+				      'MAD' , 'MDL' , 'MGA' , 'MKD' , 'MMK' , 'MNT' , 'MOP' , 'MRO' , 'MTL' ,\
+				      'MUR' , 'MVR' , 'MWK' , 'MXN' , 'MYR' , 'MZN' , 'NAD' , 'NGN' , 'NIO' ,\
+				      'NOK' , 'NPR' , 'NZD' , 'OMR' , 'PAB' , 'PEN' , 'PGK' , 'PHP' , 'PKR' ,\
+				      'PLN' , 'PYG' , 'QAR' , 'RON' , 'RSD' , 'RUB' , 'RWF' , 'SAR' , 'SBD' ,\
+				      'SCR' , 'SDG' , 'SEK' , 'SGD' , 'SHP' , 'SLL' , 'SOS' , 'SRD' , 'STD' ,\
+				      'SVC' , 'SYP' , 'SZL' , 'THB' , 'TJS' , 'TMT' , 'TND' , 'TOP' , 'TRY' ,\
+				      'TTD' , 'TWD' , 'TZS' , 'UAH' , 'UGX' , 'USD' , 'UYU' , 'UZS' , 'VEF' ,\
+				      'VND' , 'VUV' , 'WST' , 'XAF' , 'XAG' , 'XAU' , 'XCD' , 'XDR' , 'XOF' ,\
+				      'XPF' , 'YER' , 'ZAR' , 'ZMK' , 'ZMW' , 'ZWL']
+
 	#Expanding to other cryptocurrencies in v1.7
 	cryptocurrency_codes = []
 
