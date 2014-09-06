@@ -4,6 +4,7 @@ import time
 import tweepy
 from assembler import Assembler
 from datetime import datetime
+from dbwrapper import Wrapper
 
 class Streamer:
 	#Global variables
@@ -53,7 +54,7 @@ class Streamer:
 	
 	def priceupdate(self, quote):
 		rates = self.assembler.assemble(quote)
-		dogebtc, btcusd = rates[0], rates[1]
+		base_mid, mid_quote = rates[0], rates[1]
 		return '[%s CST]: The average dogecoin price is now %.2f bits ($%.6f) #dogepricebottest' \
 		% (datetime.fromtimestamp(time.time()).strftime('%m-%d %H:%M'), dogebtc*(1000000), dogebtc*btcusd)
 		#return '[%s CST]: The average dogecoin price is now %.2f bits ($%.6f).\n$1 = Ð%.2f\n1BTC = Ð%d' % (datetime.fromtimestamp(time.time()).strftime('%m-%d %H:%M:%S'), dogebtcprice, dogeusdprice, 1/dogeusdprice, dogebtcprice*100000)
