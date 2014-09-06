@@ -12,15 +12,15 @@ cj = CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 opener.addheaders = [('User-agent','Mozilla/5.0')]
 
-class Assembler():
+class Converter():
 
 	def __init__(self):
 		self.scraper = scraper.Scraper()
 		self.current_rates = self.scraper.get_prices("DOGE", "BTC")
 
-	def assemble(self, quote):
+	def convert(self, quote):
 		#return 'Average price of dogecoin: %s %.7f' % (quote, self.base_average(self.current_rates) * self.get_bitcoinaverage(quote))
-		return [self.base_average(self.current_rates), self.get_bitcoinaverage(quote)]
+		return self.base_average(self.current_rates) * self.get_bitcoinaverage(quote)
 
 	def base_average(self, rates):
 		return sum(rates)/len(rates)
