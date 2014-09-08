@@ -29,17 +29,17 @@ class Scraper():
 	def get_cryptsy(self, base):
 		url = 'http://pubapi.cryptsy.com/api.php?method=singlemarketdata&marketid=132'
 		market = json.load(opener.open(url))
-		lastprice = market['return']['markets'][base.upper()]['lasttradeprice']
-		return float(lastprice)
+		lastprice = float(market['return']['markets'][base]['lasttradeprice'])
+		return lastprice
 
 	def get_bter(self, base):
 		url = 'http://data.bter.com/api/1/trade/%s_btc' % (base)
 		market = json.load(opener.open(url))
-		lastprice = market['data'][0]['price']
-		return float(lastprice)
+		lastprice = float(market['data'][0]['price'])
+		return lastprice
 
 	def get_vrex(self, base):
 		url = 'https://api.vircurex.com/api/get_info_for_1_currency.json?base=%s&alt=BTC' % (base)
 		market = json.load(opener.open(url))
-		lastprice = market['last_trade']
-		return float(lastprice)
+		lastprice = float(market['last_trade'])
+		return lastprice

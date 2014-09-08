@@ -12,28 +12,24 @@ class Wrapper:
 		return 'I am the dogePrice database interactive python program.'
 
 	#Only execute this once to create the database
-	def create_price_DB(self):
+	def create_price_db(self):
 		self.c.execute("CREATE TABLE Prices (year INTEGER, month INTEGER, day INTEGER, hour INTEGER, minute INTEGER, base_per_mid REAL, mid_per_quote REAL)")
 
-	def create_id_DB(self):
-		self.c.execute("CREATE TABLE ReplyIDs (name REAL, id INTEGER)")
+	def create_mentions_db(self):
+		self.c.execute("CREATE TABLE Mentions (name REAL, id INTEGER)")
 
-	def update_price_DB(self, timestamp, base_per_mid, mid_per_quote, foreign_rates):
+	def update_price_db(self, timestamp, base_per_mid, mid_per_quote):
 		#timestamp is in datetime.now() format
 		year = timestamp.year
 		month = timestamp.month
 		day = timestamp.day
 		hour = timestamp.hour
 		minute = timestamp.minute
-		self.c.execute("INSERT INTO Prices (year, month, day, hour, minute, base_per_mid, mid_per_quote, foreign_rates) VALUES (?,?,?,?,?,?,?,?)",
-				   (year, month, day, hour, minute, base_per_mid, mid_per_quote, foreign_rates))
+		self.c.execute("INSERT INTO Prices (year, month, day, hour, minute, base_per_mid, mid_per_quote) VALUES (?,?,?,?,?,?,?)",
+				   (year, month, day, hour, minute, base_per_mid, mid_per_quote))
 		self.conn.commit()
 
-	def update_id_DB(self, name, twitterid):
-		self.c.execute("INSERT INTO ReplyIDs (name, id) VALUES (?,?)",
+	def update_mentions_db(self, name, twitterid):
+		self.c.execute("INSERT INTO Mentions (name, id) VALUES (?,?)",
 					    (name, twitterid))
-		self.conn.commit()
-
-	def purge_id_DB(self):
-		self.c.execute("DELETE FROM replyIDs")
 		self.conn.commit()
