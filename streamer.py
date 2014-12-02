@@ -37,7 +37,7 @@ class Streamer:
 			return '[%s CST]: The average #dogecoin price is now $%.6f, +%.1f%% growth wow (%.2f bits)' \
 			% (timestamp.strftime('%m-%d %H:%M'), new_price, delta*100, base_per_mid*(1000000))
 		else:
-			return '[%s CST]: The average #dogecoin price is now $%.6f, +%.1f%% decline (%.2f bits)' \
+			return '[%s CST]: The average #dogecoin price is now $%.6f, %.1f%% decline (%.2f bits)' \
 			% (timestamp.strftime('%m-%d %H:%M'), new_price, delta*100, base_per_mid*(1000000))	
 		
 		#return '[%s CST]: The average #dogecoin price is now $%.6f (%.2f bits)' \
@@ -51,8 +51,8 @@ class Streamer:
 			try:
 				tweet = self.priceupdate('DOGE', 'BTC', 'USD')
 				self.api.update_status(tweet)
-				#print tweet
-				#print 'Tweeted successfully'
+				print tweet
+				print 'Tweeted successfully'
 			except Exception, e:
 				print str(e)
 			time.sleep(3570)
