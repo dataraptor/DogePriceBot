@@ -63,9 +63,13 @@ However, it will not respond to users whose tweets are protected. I don't think 
 
 ##To-do list for v2.0
 ~~1. Write `scraper.py`~~
+
 ~~2. Write `assembler.py`  to average rates and create output~~
+
 ~~3. Write `streamer.py` to continuously post to twitter~~
+
 ~~4. Set up, test, and launch '@dogepricebot convert' interactive capabilities (`converter.py`)~~
+
 ~~5. Set up database for historical prices, ReplyIDs~~
 6. Automate .db daily commit into github
 
