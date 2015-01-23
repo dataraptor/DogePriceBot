@@ -8,10 +8,13 @@ from dbwrapper import Wrapper
 
 class Streamer:
 	#Global variables
-	consumer_key = ''
-	consumer_secret = ''
-	access_token = ''
-	access_token_secret = ''
+	fo = open('authentication.txt')
+	lines = [str(line.rstrip('\n')) for line in fo]
+	consumer_key = lines[0]
+	consumer_secret = lines[1]
+	access_token = lines[2]
+	access_token_secret = lines[3]
+	fo.close()
 
 	# OAuth process, using the keys and tokens
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -28,7 +31,7 @@ class Streamer:
 		timestamp = datetime.fromtimestamp(time.time())
 		rates = self.assembler.assemble(base, mid, quote)
 		base_per_mid, mid_per_quote = rates[0], rates[1]
-		last_update = self.wrapper.c.execute("SELECT * FROM Prices ORDER BY month DESC, day DESC, hour DESC").fetchone()
+		last_update = self.wrapper.c.execute("SELECT * FROM Prices ORDER BY year DESC, month DESC, day DESC, hour DESC, minute DESC").fetchone()
 		new_price = base_per_mid*mid_per_quote
 		last_price = last_update[5]*last_update[6]
 		delta = new_price/last_price - 1

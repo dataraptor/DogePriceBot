@@ -8,10 +8,13 @@ from dbwrapper import Wrapper
 
 class Converter:
 	#Global variables
-	consumer_key = 'Mhy5lNERB3dTkT3wcWeFGw'
-	consumer_secret = 'ozX3svU54uif0bZWn1jt0DrQwSmHoAWnh0ZToBYVFI'
-	access_token = '2409405422-JOZnjcCh4ZiMngnT6x0tEAKRSf9iq8s6nPZoDyr'
-	access_token_secret = 'o3xl4L4WTIFZGlAjUmlylClAVNNJf49OyvCuhdtnsvt83'
+	fo = open('authentication.txt')
+	lines = [str(line.rstrip('\n')) for line in fo]
+	consumer_key = lines[0]
+	consumer_secret = lines[1]
+	access_token = lines[2]
+	access_token_secret = lines[3]
+	fo.close()
 
 	# OAuth process, using the keys and tokens
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -22,7 +25,7 @@ class Converter:
 
 	#All 168 foreign currencies able to be converted via bitcoinaverage
 	#Bypasses openexchangerates.org
-	currency_codes = ['AED', 'AFN' , 'ALL' , 'AMD' , 'ANG' , 'AOA' , 'ARS' , 'AUD' , 'AWG' , \
+	currency_codes = ['AED' , 'AFN' , 'ALL' , 'AMD' , 'ANG' , 'AOA' , 'ARS' , 'AUD' , 'AWG' ,\
 				      'AZN' , 'BAM' , 'BBD' , 'BDT' , 'BGN' , 'BHD' , 'BIF' , 'BMD' , 'BND' ,\
 				      'BOB' , 'BRL' , 'BSD' , 'BTC' , 'BTN' , 'BWP' , 'BYR' , 'BZD' , 'CAD' ,\
 				      'CDF' , 'CHF' , 'CLF' , 'CLP' , 'CNY' , 'COP' , 'CRC' , 'CUP' , 'CVE' ,\
@@ -49,39 +52,52 @@ class Converter:
 		self.assembler = Assembler()
 		self.wrapper = Wrapper()
 
-	def convert(self, mention):
+	def populate_db(self):
+		for mention in self.api.mentions_timeline():
+			self.wrapper.update_mentions_db(mention.user.screen_name, mention.id, mention.text)
+	
+	#Return True if mention is a duplicate, False otherwise
+	def no_duplicates(self, mention):
 		command = "SELECT * FROM Mentions WHERE id = %d" % (mention.id)
-		previous_mentions = self.wrapper.c.execute(command).fetchall()
-		if len(previous_mentions) != 0:
-			return "Duplicate tweet, skipping"
+		duplicates = self.wrapper.c.execute(command).fetchall()
+		if len(duplicates) == 0:
+			return True
+		return False
 
-		print "No duplicates"
-		user = mention.user.screen_name
+	def insert_into_db(self, mention):
+		self.wrapper.update_mentions_db(mention.user.screen_name, mention.id, mention.text)
 
-		#Textual trigger
-		if '@dogepricebot convert' in mention.text.lower():
-			print "Found conversion request"
-			print user+" : "+mention.text
-			words = mention.text.lower().split(" ")
-			amount, base, quote = float(words[2]), words[3], words[5]
-			print amount, base, quote
-			rates = self.assembler.assemble(base.upper(), "BTC", quote.upper())
-			rate = rates[0]*rates[1]
+	def convert(self, mention):
+		if self.no_duplicates(mention):
+			user = mention.user.screen_name
+			#Textual trigger
+			if '@dogepricebot convert' in mention.text.lower():
+				print "Found conversion request"
+				print user+" : "+mention.text
+				words = mention.text.lower().split(" ")
+				command_start = words.index('@dogepricebot')
+				amount, base, quote = float(words[command_start+2]), words[command_start+3], words[command_start+5]
+				if base.lower() == "dogecoin" or base.lower() == "doge":
+					rates = self.assembler.assemble(quote.upper())
+					rate = rates[0]*rates[1]
+					tweet = '@%s wow such convert: %.1f #dogecoin = %.2f %s' % (user, amount, amount*rate, quote.upper())
+					print tweet
+					self.api.update_status(tweet)
+				else:
+					rates = self.assembler.assemble(base.upper())
+					rate = rates[0]*rates[1]
+					tweet = '@%s wow such convert: %.1f %s = %.2f #dogecoin' % (user, amount, base.upper(), amount/rate)
+					print tweet
+					self.api.update_status(tweet)
+			self.insert_into_db(mention)
+		else:
+			print "duplicate"
 
-			#Direct exchange rate
-			if 'doge to' in mention.text.lower() or 'dogecoins to' in mention.text.lower() or 'dogecoin to' in mention.text.lower():
-				tweet = '@%s wow such convert: %.1f #dogecoin = %.2f %s' % (user, amount, amount*rate, quote)
-				return tweet
-			#Indirect exchange rate
-			elif 'to doge' in mention.text.lower() or 'to dogecoins' in mention.text.lower() or 'to dogecoin' in mention.text.lower():
-				tweet = '@%s wow such convert: %.1f %s = %.2f #dogecoin' % (user, amount, quote, amount/rate)
-				return tweet
-		
 	#Continuous price stream
 	def listen(self):
 		print 'Listening for @dogepricebot convert requests --------------------------'
 		while True:
-			for mention in self.api.mentions_timeline(count=1):
+			for mention in self.api.mentions_timeline(count=10):
 				try:
 					self.convert(mention)
 				except Exception, e:

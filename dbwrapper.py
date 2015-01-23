@@ -16,7 +16,7 @@ class Wrapper:
 		self.c.execute("CREATE TABLE Prices (year INTEGER, month INTEGER, day INTEGER, hour INTEGER, minute INTEGER, base_per_mid REAL, mid_per_quote REAL)")
 
 	def create_mentions_db(self):
-		self.c.execute("CREATE TABLE Mentions (name REAL, id INTEGER)")
+		self.c.execute("CREATE TABLE Mentions (name REAL, id INTEGER, content REAL)")
 
 	def update_price_db(self, timestamp, base_per_mid, mid_per_quote):
 		#timestamp is in datetime.now() format
@@ -26,10 +26,10 @@ class Wrapper:
 		hour = timestamp.hour
 		minute = timestamp.minute
 		self.c.execute("INSERT INTO Prices (year, month, day, hour, minute, base_per_mid, mid_per_quote) VALUES (?,?,?,?,?,?,?)",
-				   (year, month, day, hour, minute, base_per_mid, mid_per_quote))
+			   (year, month, day, hour, minute, base_per_mid, mid_per_quote))
 		self.conn.commit()
 
-	def update_mentions_db(self, name, twitterid):
-		self.c.execute("INSERT INTO Mentions (name, id) VALUES (?,?)",
-					    (name, twitterid))
+	def update_mentions_db(self, name, twitterid, content):
+		self.c.execute("INSERT INTO Mentions (name, id, content) VALUES (?,?,?)",
+					    (name, twitterid, content))
 		self.conn.commit()

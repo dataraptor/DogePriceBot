@@ -17,20 +17,20 @@ class Assembler():
 	def __init__(self):
 		self.scraper = Scraper()
 
-	def assemble(self, base, mid, quote):
+	def assemble(self, quote):
 		#return 'Average price of dogecoin: %s %.7f' % (quote, self.base_average(self.current_rates) * self.get_bitcoinaverage(quote))
-		base_average = self.get_baseaverage(self.scraper.get_prices(base, mid))
-		return [base_average, self.get_bitcoinaverage(quote)]
+		doge_btc = self.get_baseaverage(self.scraper.get_prices("DOGE", "BTC"))
+		return [doge_btc, self.get_bitcoinaverage(quote)]
 
 	def get_baseaverage(self, rates):
 		return sum(rates)/len(rates)
 
 	def get_bitcoinaverage(self, quote):
-		print "In Assembler.py: scraping for bitcoin average"
+		#print "In Assembler.py: scraping for bitcoin average"
 		url = 'https://api.bitcoinaverage.com/ticker/global/all'
 		market = json.load(opener.open(url))
-		print "Opened JSON"
-		print market['USD']['last']
+		#print "Opened JSON"
+		#print market['USD']['last']
 		bitcoin_average = float(market[quote]['last'])
 		print "In Assembler.py: scraped bitcoin_average %.2f" % (bitcoin_average)
 		return float(bitcoin_average)
